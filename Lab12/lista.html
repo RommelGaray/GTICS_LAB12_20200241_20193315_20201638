@@ -122,6 +122,40 @@
 
     });
 
+    $("#Acumulado").click(function () {
+      $.ajax({
+        method: "GET",
+        url: "http://localhost:8000/api/liga"
+      }).done(function (data) {
+        // Calcular resultados acumulados
+        const equiposApertura = data.filter(equipo => equipo.liga === "1");
+        const equiposClausura = data.filter(equipo => equipo.liga === "2");
+
+        // Combinar datos de apertura y clausura
+        const equiposAcumulado = equiposApertura.map(apertura => {
+          const clausura = equiposClausura.find(equipo => equipo.equipo.nombre === apertura.equipo.nombre);
+
+          // Sumar los valores para obtener el acumulado
+          return {
+            equipo: apertura.equipo,
+            partidos_jugados: apertura.partidos_jugados + clausura.partidos_jugados,
+            partidos_ganados: apertura.partidos_ganados + clausura.partidos_ganados,
+            partidos_perdidos: apertura.partidos_perdidos + clausura.partidos_perdidos,
+            partidos_empatados: apertura.partidos_empatados + clausura.partidos_empatados,
+            goles_favor: apertura.goles_favor + clausura.goles_favor,
+            goles_contra: apertura.goles_contra + clausura.goles_contra,
+            goles_diferencia: apertura.goles_diferencia + clausura.goles_diferencia,
+            puntos: apertura.puntos + clausura.puntos,
+          };
+        });
+
+        listaEquipos(equiposAcumulado, 'Resultados acumulados');
+      }).fail(function (err) {
+        console.log(err);
+        alert(err);
+      });
+    });
+
     });
 
 </script>
