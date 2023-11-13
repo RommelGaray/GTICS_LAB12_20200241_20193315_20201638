@@ -9,19 +9,23 @@
     integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp"
     crossorigin="anonymous"
   />
-  <title>Tabla equipos</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <title>Lista Clausura</title>
 </head>
 <body>
 <div class="container">
-  <h2>Lista de estadios</h2>
-  <a class="btn btn-primary mt-4 mb-4" th:href="@{/estadio/new}"
-  >Nuevo arbitro</a
-  >
-  <table class="table table-sm">
+  <br>
+  <h2 id="titulo">Seleccione una tabla</h2>
+  <a class="btn btn-primary mt-4 mb-4" id="Apertura">Apertura</a>
+  <a class="btn btn-primary mt-4 mb-4" id="Clausura">Clausura</a>
+  <a class="btn btn-primary mt-4 mb-4" id="Acumulado">Acumulado</a>
+
+
+  <table class="table table-sm" id="tablaGeneral">
     <tr>
-      <th>Equipo:</th>
-      <th>Apertura/Clausura:</th>
-      <th>P. Jugados:</th>
+      <th>Equipo</th>
+      <th>P. Jugados</th>
       <th>P. Ganados</th>
       <th>P. Perdidos</th>
       <th>P. Empatados</th>
@@ -29,29 +33,98 @@
       <th>G. Contra</th>
       <th>G. Diferencia</th>
       <th>Puntos</th>
-      <th></th>
+      <th>Detalles</th>
     </tr>
-    <tr th:each="estadio, info : ${lista}">
-      <td id="equipo"></td>
-      <td id="liga"></td>
-      <td id="jugados"></td>
-      <td id="ganados"></td>
-      <td id="perdidos"></td>
-      <td id="empatados"></td>
-      <td id="favor"></td>
-      <td id="contra"></td>
-      <td id="diferencia"></td>
-      <td id="puntos"></td>
-      <td>
-        <a id="vermas">Ver mas</a>
-      </td>
-    </tr>
+
   </table>
 </div>
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
-  crossorigin="anonymous"
-></script>
+
+
+<script>
+  $(document).ready(function () {
+
+    function mostrarTabla() {
+      $("#tablaGeneral").show();
+    }
+
+
+    function listaEquipos(equipos, titulo) {
+      var tablaGeneral = $("#tablaGeneral tbody");
+      tablaGeneral.empty();
+      $("#titulo").text(titulo);
+
+
+      var encabezado = $("<tr>")
+              .append($("<th>").text("Equipo"))
+              .append($("<th>").text("P. Jugados"))
+              .append($("<th>").text("P. Ganados"))
+              .append($("<th>").text("P. Perdidos"))
+              .append($("<th>").text("P. Empatados"))
+              .append($("<th>").text("G. Favor"))
+              .append($("<th>").text("G. Contra"))
+              .append($("<th>").text("G. Diferencia"))
+              .append($("<th>").text("Puntos"))
+              .append($("<th>").text("Detalles"));
+
+      tablaGeneral.append(encabezado);
+
+      equipos.forEach(function (equipo) {
+        var filaEquipo = $("<tr>")
+                .append($("<td>").text(equipo.equipo.nombre))
+                .append($("<td>").text(equipo.partidos_jugados))
+                .append($("<td>").text(equipo.partidos_ganados))
+                .append($("<td>").text(equipo.partidos_perdidos))
+                .append($("<td>").text(equipo.partidos_empatados))
+                .append($("<td>").text(equipo.goles_favor))
+                .append($("<td>").text(equipo.goles_contra))
+                .append($("<td>").text(equipo.goles_diferencia))
+                .append($("<td>").text(equipo.puntos))
+                .append($("<td>").text("..."));
+
+        tablaGeneral.append(filaEquipo);
+      });
+
+      mostrarTabla();
+    }
+
+
+
+
+    $("#Clausura").click(function () {
+      $.ajax({
+        method: "GET",
+        url:"http://localhost:8000/api/liga"
+      }).done(function (data){
+
+        const equiposClausura = data.filter(equipo => equipo.liga === "2");
+        listaEquipos(equiposClausura, 'Resultados del torneo Clausura');
+
+      }).fail(function (err){
+        console.log(err);
+        alert(err)
+      })
+
+      });
+
+    $("#Apertura").click(function () {
+      $.ajax({
+        method: "GET",
+        url:"http://localhost:8000/api/liga"
+      }).done(function (data){
+
+        const equiposApertura = data.filter(equipo => equipo.liga === "1");
+        listaEquipos(equiposApertura, 'Resultados del torneo Apertura');
+
+      }).fail(function (err){
+        console.log(err);
+        alert(err)
+      })
+
+    });
+
+    });
+
+</script>
+
 </body>
 </html>
