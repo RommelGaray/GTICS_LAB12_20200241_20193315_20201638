@@ -90,14 +90,14 @@
 
 
 
-    $("#Apertura").click(function () {
+    $("#Clausura").click(function () {
       $.ajax({
         method: "GET",
         url:"http://localhost:8000/api/liga"
       }).done(function (data){
 
-        const equiposApertura = data.filter(equipo => equipo.liga === "1");
-        listaEquipos(equiposApertura, 'Resultados del torneo Apertura');
+        const equiposApertura = data.filter(equipo => equipo.liga === "2");
+        listaEquipos(equiposApertura, 'Resultados del torneo Clausura');
 
       }).fail(function (err){
         console.log(err);
